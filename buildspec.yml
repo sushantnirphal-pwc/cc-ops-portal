@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 362695547081.dkr.ecr.us-east-1.amazonaws.com)
+      - REPOSITORY=362695547081.dkr.ecr.us-east-1.amazonaws.com/repo-1
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION::7}
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY:$IMAGE_TAG .
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $REPOSITORY:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"repo-1","imageUri":"%s"}]' $REPOSITORY:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files: imagedefinitions.json
