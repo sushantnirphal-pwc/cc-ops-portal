@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ccops-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ccops
+      MYSQL_USER: ccops
+      MYSQL_PASSWORD: ccops123
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3306:3306"
+    command: ["--default-authentication-plugin=mysql_native_password"]

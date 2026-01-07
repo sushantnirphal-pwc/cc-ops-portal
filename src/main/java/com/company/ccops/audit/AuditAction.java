@@ -1,0 +1,16 @@
+package com.company.ccops.audit;
+
+public enum AuditAction {
+    CUSTOMER_SEARCH,
+    CUSTOMER_VIEW,
+    ACCOUNT_VIEW,
+    CARD_VIEW,
+    CARD_BLOCK_REQUESTED,
+    CARD_BLOCKED,
+    CARD_UNBLOCK_REQUESTED,
+    CARD_UNBLOCKED,
+    DISPUTE_CREATED,
+    APPROVAL_REQUESTED,
+    APPROVAL_DECISION,
+    TXN_SEARCH
+}
