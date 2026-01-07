@@ -1,15 +1,22 @@
-FROM 362695547081.dkr.ecr.us-east-1.amazonaws.com/maven-base:3.9-eclipse-temurin-17 AS build
+# Stage 1: Build
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# If pom.xml is inside src/
-COPY src/pom.xml ./pom.xml
-RUN mvn -q -DskipTests dependency:go-offline
+# Copy pom.xml and download dependencies (go offline)
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
 
-COPY src/src ./src
-RUN mvn -q -DskipTests clean package
+# Copy source code and build without running tests
+COPY src ./src
+RUN mvn -B -DskipTests clean package
 
-FROM 362695547081.dkr.ecr.us-east-1.amazonaws.com/eclipse-temurin-runtime:17-jre
+# Stage 2: Run
+FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar /app/app.jar
+
+# Copy built jar from Stage 1
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["sh","-c","java -jar /app/app.jar"]
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
